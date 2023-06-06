@@ -1,0 +1,88 @@
+package com.example.letgocloneapp
+
+import android.content.Intent
+import androidx.appcompat.app.AppCompatActivity
+import android.os.Bundle
+import android.view.View
+import android.widget.ImageButton
+import android.widget.Toast
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.letgocloneapp.Models.ItemData
+import com.example.letgocloneapp.Models.User
+import com.example.letgocloneapp.requestUrl.ItemService
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.moshi.MoshiConverterFactory
+
+class ItemListScreen : AppCompatActivity(),onClickListener {
+    lateinit var itemRv:RecyclerView
+    lateinit var itemAdapter: ItemAdapter
+    lateinit var addButton:ImageButton
+    lateinit var itemList : ArrayList<ItemData>
+    private var caption : String = ""
+    private val BASE_URL = "http://10.0.2.2:9080/api/v1/"
+    lateinit var user: User
+    private val moshi = Moshi.Builder()
+        .add(KotlinJsonAdapterFactory())
+        .build()
+    private val retrofit = Retrofit.Builder()
+        .addConverterFactory(MoshiConverterFactory.create(moshi))
+        .baseUrl(BASE_URL)
+        .build()
+    override fun onCreate(savedInstanceState: Bundle?)  {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_item_list_screen)
+        bindViews()
+        user = intent.getSerializableExtra("user")as User
+        itemAdapter = ItemAdapter(this)
+        itemRv.adapter = itemAdapter
+        itemRv.setHasFixedSize(true)
+        itemRv.layoutManager = GridLayoutManager(this,2)
+        addButton.setOnClickListener {
+            val intent = Intent(this, AddItemActivity::class.java)
+            intent.putExtra("user",user)
+            startActivity(intent)
+        }
+
+    }
+
+    override fun onResume() {
+        super.onResume()
+        getItemData()
+    }
+    fun bindViews(){
+        itemRv=findViewById(R.id.rvItemList)
+        addButton=findViewById(R.id.addButton)
+    }
+    // get itemData from api
+    fun getItemData(){
+        val itemApiService = retrofit.create(ItemService::class.java)
+        val itemData = itemApiService.getItems()
+        itemData.enqueue(object : Callback<List<ItemData>> {
+            override fun onResponse(call: Call<List<ItemData>>, response: Response<List<ItemData>>) {
+                if (response.isSuccessful) {
+                    itemList = response.body() as ArrayList<ItemData>
+                    itemAdapter.addItems(itemList)
+                }
+            }
+            override fun onFailure(call: Call<List<ItemData>>, t: Throwable) {
+                Toast.makeText(this@ItemListScreen, "Error", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    // onclick method for open ItemDetailActivity
+    override fun onItemClickListener(position: Int, v: View?) {
+        val actv = v?.context as AppCompatActivity // viewin activitisini döndür
+        val intent = Intent(actv, ItemDetailActivity::class.java)
+        intent.putExtra("item",itemList[position])
+        startActivity(intent)
+    }
+
+
+}
