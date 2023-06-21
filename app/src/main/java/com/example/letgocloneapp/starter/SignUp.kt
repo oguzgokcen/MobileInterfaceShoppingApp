@@ -26,6 +26,7 @@ class SignUp : AppCompatActivity() {
     lateinit var name:EditText
     lateinit var surname:EditText
     lateinit var confirm:EditText
+    lateinit var phoneNumber :EditText
     lateinit var signupButton:Button
     lateinit var backButton:ImageButton
     private val BASE_URL = "http://10.0.2.2:9080/api/v1/"
@@ -61,6 +62,7 @@ class SignUp : AppCompatActivity() {
         confirm = findViewById(R.id.confirm)
         signupButton = findViewById(R.id.sign_up)
         backButton = findViewById(R.id.backButton)
+        phoneNumber = findViewById(R.id.email2)
     }
 
     //Sign Up
@@ -71,7 +73,7 @@ class SignUp : AppCompatActivity() {
         }
 
         val service = retrofit.create(LoginRegisterApiService::class.java)
-        val call = service.registerUser(User(-1,name.text.toString(),surname.text.toString(),email.text.toString(), password.text.toString()) )
+        val call = service.registerUser(User(-1,name.text.toString(),surname.text.toString(),email.text.toString(), password.text.toString(),phoneNumber.text.toString()))
         call.enqueue(object : Callback<User> {
             override fun onResponse(call: Call<User>, response: Response<User>) {
                 if(response.isSuccessful){

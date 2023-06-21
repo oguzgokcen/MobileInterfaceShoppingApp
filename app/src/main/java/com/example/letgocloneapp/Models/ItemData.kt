@@ -5,4 +5,5 @@ data class ItemData(val id:Int
     ,val sellerName :String
     ,val price:Int
     ,val adress:String, val caption:String
-    ,val description:String): java.io.Serializable
+    ,val description:String
+    ,val sellerPhone:String): java.io.Serializable

@@ -25,7 +25,6 @@ import java.io.*
 
 
 class AddItemActivity : AppCompatActivity() {
-    lateinit var sellerName: EditText
     lateinit var addItemPrice: EditText
     lateinit var adress : EditText
     lateinit var itemCaption: EditText
@@ -49,6 +48,7 @@ class AddItemActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_item)
         bindViews()
+        // get user from intent
         user = intent.getSerializableExtra("user")as User
         addImage.setOnClickListener {
             chooseImage()
@@ -58,15 +58,12 @@ class AddItemActivity : AppCompatActivity() {
                 // Handle the returned Uri
                 if (uri != null) {
                     imageUri = uri
+                    Log.d("URI",imageUri.toString())
+                    // TURN IT TO BITMAP
                     selectedImageBitmap=
                         MediaStore.Images.Media.getBitmap(contentResolver, imageUri)
-                    val path = MediaStore.Images.Media.insertImage(
-                        contentResolver,
-                        selectedImageBitmap,
-                        "Title",
-                        null
-                    )
-                    addImage.setImageURI(Uri.parse(path))
+                    //SET IMAGE TO IMAGEVIEW
+                    addImage.setImageURI(imageUri)
                 }
             }
         pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
@@ -78,7 +75,6 @@ class AddItemActivity : AppCompatActivity() {
     }
 
     fun bindViews() {
-        sellerName = findViewById(R.id.addText)
         addImage = findViewById(R.id.addImage)
         addItemButton = findViewById(R.id.addItemButton)
         addItemPrice = findViewById(R.id.addItemPrice)
@@ -87,9 +83,8 @@ class AddItemActivity : AppCompatActivity() {
         itemDescription = findViewById(R.id.itemDescription)
     }
 
+    // Choose image from gallery
     fun chooseImage() {
-        /*val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-        startActivityForResult(intent, PICK_IMAGE_REQUEST)*/
         val pickMedia =
             registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
                 // Handle the returned Uri
@@ -111,7 +106,7 @@ class AddItemActivity : AppCompatActivity() {
     // Post ItemData using Retrofit
     fun addItem(){
         val service = retrofit.create(ItemService::class.java)
-        val call = service.addItem(ItemData(0,imageUrl,sellerName.text.toString(),addItemPrice.text.toString().toInt(),adress.text.toString(),itemCaption.text.toString(),itemDescription.text.toString()))
+        val call = service.addItem(ItemData(0,imageUrl,user.first_name.toString(),addItemPrice.text.toString().toInt(),adress.text.toString(),itemCaption.text.toString(),itemDescription.text.toString(),user.phoneNumber))
         call.enqueue(object : retrofit2.Callback<ItemData> {
             override fun onResponse(call: retrofit2.Call<ItemData>, response: retrofit2.Response<ItemData>) {
                 if (response.isSuccessful) {
@@ -127,8 +122,7 @@ class AddItemActivity : AppCompatActivity() {
         })
     }
 
-
-
+    // Upload image to server
     fun uploadBitMap(url:String,bitmap: Bitmap){
         // Create a file to store the bitmap
         val filename = itemCaption.text.toString() + "_"+user.user_id+".jpg"
@@ -174,43 +168,8 @@ class AddItemActivity : AppCompatActivity() {
                 finish()
             }
         })
-
-        // Process the response as needed
-        /*if (response.isSuccessful) {
-            Log.d("UPLOAD", "Image successfully uploaded")
-        } else {
-            Log.d("UPLOAD", "Image upload failed")
-        }*/
     }
 
-    //fun sendImageBitmap(imageBitmap: Bitmap) {
-    /*    val baos = ByteArrayOutputStream()
-        imageBitmap.compress(Bitmap.CompressFormat.JPEG, 0, baos)
-        val imageBytes = baos.toByteArray()
-        val client = OkHttpClient()
-
-        val f = File(cacheDir, "itemImage")
-        try {
-            fos = FileOutputStream(f)
-        } catch (e: FileNotFoundException) {
-            e.printStackTrace()
-        }
-        try {
-            fos.write(imageBytes)
-            fos.flush()
-            fos.close()
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
-
-        // Create a request body containing the image data
-        val reqFile = RequestBody.create(MediaType.parse("image/*"), f)
-        val body = MultipartBody.Part.createFormData("upload", f.name, reqFile)
-        val service = Retrofit.Builder().baseUrl(BASE_URL).build()
-            .create(ItemService::class.java)
-        val call = service.addItem(body)
-        */
-     */
 
 
 }

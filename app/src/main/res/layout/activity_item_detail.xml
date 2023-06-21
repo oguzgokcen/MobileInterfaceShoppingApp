@@ -42,6 +42,7 @@
         android:layout_marginEnd="10dp"
         android:fontFamily="sans-serif-medium"
         android:text="TextView"
+        android:textColor="@color/black"
         android:textSize="40dp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -99,9 +100,10 @@
 
     <TextView
         android:id="@+id/detailUser"
-        android:layout_width="387dp"
-        android:layout_height="55dp"
+        android:layout_width="363dp"
+        android:layout_height="54dp"
         android:drawableStart="@drawable/def_userpp"
+        android:drawableEnd="@drawable/baseline_local_phone_24"
         android:fontFamily="sans-serif-black"
         android:text="TextView"
         android:textSize="40dp"
@@ -111,4 +113,5 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/detailPrice"
         app:layout_constraintVertical_bias="0.454" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

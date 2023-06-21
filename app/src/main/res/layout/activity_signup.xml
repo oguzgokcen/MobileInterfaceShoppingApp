@@ -64,6 +64,15 @@
             android:inputType="textEmailAddress"
             android:minHeight="48dp" />
 
+        <EditText
+            android:id="@+id/email2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:hint="PhoneNumber"
+            android:inputType="phone"
+            android:minHeight="48dp" />
+
         <LinearLayout
             android:id="@+id/linearLayout"
             android:layout_width="match_parent"

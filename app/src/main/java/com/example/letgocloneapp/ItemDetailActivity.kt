@@ -1,5 +1,7 @@
 package com.example.letgocloneapp
 
+import android.content.Intent
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.EditText
@@ -25,10 +27,17 @@ class ItemDetailActivity : AppCompatActivity() {
             Glide.with(this).load(item.imageUrl).into(detailImage)
             detailCaption.text = item.caption
             val price = item.price.toString() + " TL"
+            val phone = Uri.parse("tel:"+item.sellerPhone)
             detailPrice.text = price
             detailDescription.text = item.description
             detailSellerName.text = item.sellerName
             detailSellerAdress.text = item.adress
+            detailSellerName.setOnClickListener {
+                val intent = Intent(Intent.ACTION_DIAL)
+                intent.setData(phone)
+                startActivity(intent)
+            }
+
         }
 
     }
